@@ -37,6 +37,8 @@
   (add-to-env env "*" (lambda () (push-stack s (* (pop-stack s) (pop-stack s)))))
   (add-to-env env "/" (lambda () (push-stack s (/ (pop-stack s) (pop-stack s)))))
   (add-to-env env "." (lambda () (fprintf (current-output-port) "~a~n" (pop-stack s))))
+  (add-to-env env "SPACES" (lambda () (display (make-string (pop-stack s) #\space))))
+  (add-to-env env "EMIT" (lambda () (write-byte (pop-stack s))))
   (add-to-env env "BYE" (lambda () (exit))))
 
 (define (get-word k)
