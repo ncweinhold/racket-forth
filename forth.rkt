@@ -12,6 +12,13 @@
       (set! stack (cons v stack)))
     (define/public (peek)
       (car stack))
+    (define/public (view)
+      (for ([item stack])
+        (fprintf (current-output-port) "Item is ~a ~n" item)))
+    (define/public (is-empty?)
+      (empty? stack))
+    (define/public (clear)
+      (set! stack '()))
     (super-new)))
 
 (define (pop-stack s)
@@ -22,6 +29,15 @@
 
 (define (peek-stack s)
   (send s peek))
+
+(define (display-stack s)
+  (send s view))
+
+(define (empty-stack? s)
+  (send s is-empty?))
+
+(define (clear-stack s)
+  (send s clear))
 
 (define stack (new Stack))
 ;; The environment for now will just be a global hash table...
@@ -37,9 +53,21 @@
   (add-to-env env "*" (lambda () (push-stack s (* (pop-stack s) (pop-stack s)))))
   (add-to-env env "/" (lambda () (push-stack s (/ (pop-stack s) (pop-stack s)))))
   (add-to-env env "." (lambda () (fprintf (current-output-port) "~a~n" (pop-stack s))))
+  (add-to-env env ".S" (lambda () (display-stack s)))
+  (add-to-env env "DUP" (lambda () (push-stack s (peek-stack s))))
+  (add-to-env env "?DUP" (lambda () 
+                           (if (empty-stack? s)
+                               (push-stack s 0)
+                               (push-stack s (peek-stack s)))))
+  (add-to-env env "DROP" (lambda () (pop-stack s)))
+  (add-to-env env "SWAP" (lambda () 
+                           (let ((top (pop-stack s))
+                                 (next (pop-stack s)))
+                             (push-stack s top)
+                             (push-stack s next))))
+  (add-to-env env "CLEAR" (lambda () (clear-stack s)))
   (add-to-env env "SPACES" (lambda () (display (make-string (pop-stack s) #\space))))
   (add-to-env env "EMIT" (lambda () (write-byte (pop-stack s))))
-  (add-to-env env "DUP" (lambda () (push-stack s (peek-stack s))))
   (add-to-env env "BYE" (lambda () (exit))))
 
 (define (get-word k)
