@@ -10,11 +10,8 @@
         top))
     (define/public (push v)
       (set! stack (cons v stack)))
-    (define/public (display-stack)
-      ;; Will have a nested function that takes a numeric argument
-      ;; The numeric value will just be the index into the stack
-      ;; e.g. 0 will represent the top of the stack
-      (display "TODO"))
+    (define/public (peek)
+      (car stack))
     (super-new)))
 
 (define (pop-stack s)
@@ -22,6 +19,9 @@
 
 (define (push-stack s v)
   (send s push v))
+
+(define (peek-stack s)
+  (send s peek))
 
 (define stack (new Stack))
 ;; The environment for now will just be a global hash table...
@@ -39,6 +39,7 @@
   (add-to-env env "." (lambda () (fprintf (current-output-port) "~a~n" (pop-stack s))))
   (add-to-env env "SPACES" (lambda () (display (make-string (pop-stack s) #\space))))
   (add-to-env env "EMIT" (lambda () (write-byte (pop-stack s))))
+  (add-to-env env "DUP" (lambda () (push-stack s (peek-stack s))))
   (add-to-env env "BYE" (lambda () (exit))))
 
 (define (get-word k)
