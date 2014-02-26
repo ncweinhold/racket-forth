@@ -59,8 +59,6 @@
   (add-to-env env "AND" (lambda () (push-stack s (bitwise-and (pop-stack s) (pop-stack s)))))
   (add-to-env env "OR" (lambda () (push-stack s (bitwise-ior (pop-stack s) (pop-stack s)))))
   (add-to-env env "XOR" (lambda () (push-stack s (bitwise-xor (pop-stack s) (pop-stack s)))))
-  ;(add-to-env env "LSHIFT")
-  ;(add-to-env env "RSHIFT")
   (add-to-env env "MIN" (lambda () (push-stack s (min (pop-stack s) (pop-stack s)))))
   (add-to-env env "MAX" (lambda () (push-stack s (max (pop-stack s) (pop-stack s)))))
   (add-to-env env "." (lambda () (fprintf (current-output-port) "~a~n" (pop-stack s))))
@@ -95,11 +93,6 @@
   (let ((tokens (string-split line)))
     (for ([token tokens])
       (parse-token token))))
-
-;; Repl function
-;; Read a line from the standard input.
-;; Break the line up into whitespace delimited tokens
-;; For each token, process it appropriately
 
 (define (repl)
   (display ">>> ")
